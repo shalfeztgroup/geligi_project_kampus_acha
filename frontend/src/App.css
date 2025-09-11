@@ -1,0 +1,148 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.App {
+  min-height: 100vh;
+  background: #141414;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #434343;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Ant Design customizations */
+.ant-layout-sider {
+  background: #1f1f1f !important;
+}
+
+.ant-menu-dark {
+  background: #1f1f1f !important;
+}
+
+.ant-menu-dark .ant-menu-item {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.ant-menu-dark .ant-menu-item:hover {
+  background-color: #1890ff !important;
+  color: #fff !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background-color: #1890ff !important;
+  color: #fff !important;
+}
+
+.ant-card {
+  background: #1f1f1f !important;
+  border: 1px solid #434343 !important;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid #434343 !important;
+}
+
+.ant-table {
+  background: #1f1f1f !important;
+}
+
+.ant-table-thead > tr > th {
+  background: #262626 !important;
+  border-bottom: 1px solid #434343 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid #434343 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #262626 !important;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Status indicators */
+.status-active {
+  color: #52c41a;
+}
+
+.status-inactive {
+  color: #8c8c8c;
+}
+
+.status-error {
+  color: #ff4d4f;
+}
+
+.status-pending {
+  color: #faad14;
+}
+
+/* Integration cards */
+.integration-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.integration-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Webhook logs */
+.webhook-log {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  background: #000;
+  padding: 8px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #262626 25%, #434343 50%, #262626 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

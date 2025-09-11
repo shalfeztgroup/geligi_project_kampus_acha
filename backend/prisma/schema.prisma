@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  integrations Integration[]
+  webhooks     Webhook[]
+  logs         Log[]
+
+  @@map("users")
+}
+
+model Integration {
+  id          String           @id @default(cuid())
+  name        String
+  type        IntegrationType
+  status      IntegrationStatus @default(INACTIVE)
+  config      Json
+  mapping     Json?
+  userId      String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  webhooks    Webhook[]
+  syncLogs    SyncLog[]
+
+  @@map("integrations")
+}
+
+model Webhook {
+  id             String      @id @default(cuid())
+  integrationId  String
+  platform       String
+  eventType      String
+  payload        Json
+  processed      Boolean     @default(false)
+  processedAt    DateTime?
+  userId         String
+  createdAt      DateTime    @default(now())
+
+  // Relations
+  integration    Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("webhooks")
+}
+
+model SyncLog {
+  id             String      @id @default(cuid())
+  integrationId  String
+  direction      SyncDirection
+  status         SyncStatus
+  sourceData     Json?
+  targetData     Json?
+  error          String?
+  duration       Int?        // in milliseconds
+  createdAt      DateTime    @default(now())
+
+  // Relations
+  integration    Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@map("sync_logs")
+}
+
+model Log {
+  id        String   @id @default(cuid())
+  level     LogLevel
+  message   String
+  metadata  Json?
+  userId    String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("logs")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  USER
+  VIEWER
+}
+
+enum IntegrationType {
+  SLACK
+  JIRA
+  AIRTABLE
+  GITHUB
+  TRELLO
+  NOTION
+  LARK
+}
+
+enum IntegrationStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+  PENDING
+}
+
+enum SyncDirection {
+  INBOUND
+  OUTBOUND
+  BIDIRECTIONAL
+}
+
+enum SyncStatus {
+  SUCCESS
+  FAILED
+  PENDING
+  RETRYING
+}
+
+enum LogLevel {
+  ERROR
+  WARN
+  INFO
+  DEBUG
+}

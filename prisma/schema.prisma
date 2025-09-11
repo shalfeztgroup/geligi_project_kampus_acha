@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  integrations Integration[]
+  webhooks     Webhook[]
+  logs         ActivityLog[]
+
+  @@map("users")
+}
+
+model Integration {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // 'slack', 'jira', 'airtable', 'lark'
+  status      String   @default("inactive") // 'active', 'inactive', 'error'
+  config      Json     // Encrypted configuration
+  credentials Json     // Encrypted credentials
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  webhooks    Webhook[]
+  syncJobs    SyncJob[]
+
+  @@map("integrations")
+}
+
+model Webhook {
+  id             String   @id @default(cuid())
+  name           String
+  url            String
+  secret         String
+  events         String[] // Array of event types
+  isActive       Boolean  @default(true)
+  lastTriggered  DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  integrationId  String
+  integration    Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@map("webhooks")
+}
+
+model SyncJob {
+  id             String   @id @default(cuid())
+  status         String   @default("pending") // 'pending', 'running', 'completed', 'failed'
+  type           String   // 'full', 'incremental'
+  startedAt      DateTime?
+  completedAt    DateTime?
+  error          String?
+  recordsProcessed Int    @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  integrationId  String
+  integration    Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@map("sync_jobs")
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  action      String   // 'create', 'update', 'delete', 'sync'
+  resource    String   // 'integration', 'webhook', 'sync'
+  resourceId  String?
+  details     Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+model LarkWorkspace {
+  id          String   @id @default(cuid())
+  appId       String   @unique
+  appSecret   String
+  tenantToken String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  integrations Integration[]
+
+  @@map("lark_workspaces")
+}
