@@ -3,8 +3,8 @@ import { Layout as AntLayout, Menu, Avatar, Dropdown, Button, theme } from 'antd
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   DashboardOutlined,
-  IntegrationOutlined,
-  WebhookOutlined,
+  ApiOutlined,
+  LinkOutlined,
   SettingOutlined,
   LogoutOutlined,
   UserOutlined,
@@ -33,12 +33,12 @@ const Layout: React.FC = () => {
     },
     {
       key: '/integrations',
-      icon: <IntegrationOutlined />,
+      icon: <ApiOutlined />,
       label: 'Integrations',
     },
     {
       key: '/webhooks',
-      icon: <WebhookOutlined />,
+      icon: <LinkOutlined />,
       label: 'Webhooks',
     },
     {
